@@ -1,0 +1,10 @@
+[package]
+name = "stm32f3discovery"
+version = "0.1.0"
+authors = ["Krzysztof Langner <klangner@gmail.com>"]
+
+[dependencies]
+pg = { path = "pg" }
+
+[profile.release]
+lto = true
