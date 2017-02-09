@@ -3,6 +3,8 @@
 
 extern crate pg;
 
+
+#[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
     let y;
