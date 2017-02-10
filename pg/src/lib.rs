@@ -1,37 +1,18 @@
-//! Playground
 
-#![feature(asm)]
-#![feature(lang_items)]
+#![feature(macro_reexport)]
 #![no_std]
 
-#[macro_use]
+#[macro_reexport(bkpt, iprint, iprintln)]
 extern crate f3;
 
-pub use f3::delay;
-
-/// LEDs
-pub mod led {
-    pub use f3::led::{LEDS, Led};
+/// Low level access to peripherals
+pub mod peripheral {
+    pub use f3::peripheral::{rcc, rcc_mut, gpioe, gpioe_mut};
 }
 
+// Override the `init` routine to NOT initialize the GPIOE port
 #[doc(hidden)]
 #[export_name = "_init"]
 pub unsafe fn init() {
-    f3::delay::init();
-    f3::led::init();
-}
-
-#[doc(hidden)]
-#[export_name = "_default_exception_handler"]
-pub unsafe extern "C" fn exception_handler() {
-    bkpt!();
-
-    loop {}
-}
-
-#[lang = "panic_fmt"]
-unsafe extern "C" fn panic_fmt() {
-    bkpt!();
-
-    loop {}
+    f3::itm::init();
 }
