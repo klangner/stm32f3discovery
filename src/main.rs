@@ -1,29 +1,33 @@
 #![no_std]
 #![no_main]
 
-extern crate pg;
+extern crate f3;
 
-use pg::peripheral;
+use core::iter;
+use f3::delay;
+use f3::led::{LEDS};
 
+
+// Initialize delay and led module
+#[inline(never)]
+#[export_name = "_init"]
+pub unsafe fn init() {
+    f3::delay::init();
+    f3::led::init();
+}
+
+
+// Main function
 #[inline(never)]
 #[no_mangle]
 pub fn main() -> ! {
-    let (gpioe, rcc) =
-    unsafe { (peripheral::gpioe_mut(), peripheral::rcc_mut()) };
-
-    // TODO initialize GPIOE
-
-    // Turn on all the LEDs in the compass
-    gpioe.odr.write(|w| {
-        w.odr8(true)
-            .odr9(true)
-            .odr10(true)
-            .odr11(true)
-            .odr12(true)
-            .odr13(true)
-            .odr14(true)
-            .odr15(true)
-    });
-
-    loop {}
+    loop {
+        for (current, next) in LEDS.iter()
+            .zip(LEDS.iter().skip(1).chain(iter::once(&LEDS[0]))) {
+            next.on();
+            delay::ms(50);
+            current.off();
+            delay::ms(50);
+        }
+    }
 }
